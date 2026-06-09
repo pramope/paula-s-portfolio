@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>paula ramos perez.</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%232563eb'/></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+:root {
+  --bg: #fffff;
+  --ink: #111010;
+  --muted: #888480;
+  --folder-blue-top: #a8c4e0;
+  --folder-blue: #7aabda;
+  --folder-shadow: #5a8ab8;
+  --selection: rgba(100,150,220,0.18);
+  --selection-border: rgba(100,150,220,0.7);
+}
+
+html, body {
+  height: 100%;
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: none;
+  user-select: none;
+}
+
+#custom-cursor {
+  position: fixed;
+  width: 18px; height: 18px;
+  background: #2563eb;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-4px, -4px);
+  transition: width 0.1s, height 0.1s, background 0.1s;
+}
+#custom-cursor.pointer {
+  width: 28px; height: 34px;
+  background: transparent url('icons/cursor.png') center/contain no-repeat;
+}
+
+/* VIDEO BG */
+.video-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.video-bg video {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(0.4) brightness(1.05) sepia(0.15);
+  opacity: 0.12;
+}
+
+/* DESKTOP */
+.desktop {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* MENUBAR */
+.menubar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 26px;
+  background: rgba(200,215,235,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  display: flex; align-items: center;
+  padding: 0 1rem;
+  gap: 1.4rem;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.menubar-name { font-weight: 400; font-size: 12px; }
+.menubar-item {
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.menubar-item:hover { color: var(--ink); }
+.menubar-right {
+  margin-left: auto;
+  display: flex; gap: 1.2rem; align-items: center;
+}
+.menubar-clock { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+
+/* HERO TEXT */
+.hero-wrap {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -48%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hero-name {
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  font-size: clamp(5rem, 12vw, 9.5rem);
+  line-height: 0.92;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+}
+
+.hero-name em {
+  font-style: italic;
+  display: block;
+}
+
+/* selection box around second line */
+.selection-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.selection-box {
+  position: absolute;
+  inset: -4px -6px;
+  border: 1.5px solid var(--selection-border);
+  background: var(--selection);
+  pointer-events: none;
+  animation: selPulse 4s ease-in-out infinite;
+}
+@keyframes selPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* selection handles */
+.selection-box::before, .selection-box::after,
+.sel-handle-tl, .sel-handle-tr, .sel-handle-bl, .sel-handle-br,
+.sel-handle-t, .sel-handle-b, .sel-handle-l, .sel-handle-r {
+  content: '';
+  position: absolute;
+  width: 6px; height: 6px;
+  background: white;
+  border: 1px solid var(--selection-border);
+}
+.sel-handle-tl { top: -3px; left: -3px; }
+.sel-handle-tr { top: -3px; right: -3px; }
+.sel-handle-bl { bottom: -3px; left: -3px; }
+.sel-handle-br { bottom: -3px; right: -3px; }
+.sel-handle-t  { top: -3px; left: 50%; transform: translateX(-50%); }
+.sel-handle-b  { bottom: -3px; left: 50%; transform: translateX(-50%); }
+.sel-handle-l  { left: -3px; top: 50%; transform: translateY(-50%); }
+.sel-handle-r  { right: -3px; top: 50%; transform: translateY(-50%); }
+
+
+.hero-sub {
+  margin-top: 2rem;   /* increase gap below the hero-name */
+  font-size: 12px;    /* slightly larger subtext */
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  text-transform: lowercase;
+}
+
+/* SCATTERED ITEMS: images + folders */
+.item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+  z-index: 30;
+}
+
+.item:hover { transform: var(--base-transform, none) scale(1.04); }
+.item.selected .item-label { background: #4a7fc1; color: white; border-radius: 2px; }
+
+/* photo items */
+.item-img {
+  display: block;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  border-radius: 1px;
+  object-fit: cover;
+  background: #ccc;
+  overflow: hidden;
+}
+
+.item-img-placeholder {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+
+.img-caption {
+  position: absolute;
+  inset: 0;
+  background: rgba(17,16,16,0.62);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px 10px 12px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.item:hover .img-caption { opacity: 1; }
+.img-caption-text {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: #f0eeea;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+.img-caption-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(240,238,234,0.55);
+  letter-spacing: 0.14em;
+  margin-top: 4px;
+}
+
+.item-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-align: center;
+  padding: 1px 5px;
+  max-width: 120px;
+  line-height: 1.4;
+}
+
+/* FOLDER */
+.folder-icon {
+  position: relative;
+  width: 72px; height: 58px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.15));
+}
+.folder-icon:hover { transform: scale(1.07); }
+.folder-icon:active { transform: scale(0.97); }
+
+.folder-tab {
+  position: absolute;
+  top: 0; left: 4px;
+  width: 28px; height: 10px;
+  background: var(--folder-blue-top);
+  border-radius: 3px 3px 0 0;
+}
+.folder-body {
+  position: absolute;
+  top: 7px; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(175deg, #c8dcef 0%, var(--folder-blue) 100%);
+  border-radius: 3px 4px 4px 4px;
+  border: 1px solid rgba(90,138,184,0.4);
+}
+.folder-shine {
+  position: absolute;
+  top: 3px; left: 8px; right: 8px; height: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+  border-radius: 2px;
+}
+
+.folder-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 30;
+}
+.folder-item:hover .folder-icon { transform: scale(1.07); }
+.folder-item .item-label { font-weight: 400; font-size: 11px; }
+
+/* PANEL */
+.panel-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(2px);
+  align-items: center; justify-content: center;
+}
+.panel-overlay.open { display: flex; }
+
+.panel-window {
+  background: #f0eeea;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08);
+  width: min(680px, 90vw);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  animation: windowIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes windowIn {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* titlebar */
+.titlebar {
+  height: 38px;
+  background: linear-gradient(180deg, #e2e0db 0%, #d8d5d0 100%);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px 10px 0 0;
+  display: flex; align-items: center; padding: 0 14px; gap: 7px;
+  flex-shrink: 0;
+  cursor: grab;
+}
+.titlebar:active { cursor: grabbing; }
+.tb-dot {
+  width: 12px; height: 12px; border-radius: 50%; cursor: pointer;
+  transition: filter 0.15s;
+}
+.tb-dot:hover { filter: brightness(0.85); }
+.tb-close { background: #ff5f57; border: 1px solid #e0443d; }
+.tb-min   { background: #febc2e; border: 1px solid #d49a1a; }
+.tb-max   { background: #28c840; border: 1px solid #1dad31; }
+.tb-title {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: 12px; letter-spacing: 0.06em; color: #555; font-weight: 400;
+}
+
+.panel-content {
+  padding: 2rem 2.4rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* panel content styles */
+.pw-eyebrow {
+  font-size: 10px; letter-spacing: 0.3em; color: var(--muted);
+  text-transform: lowercase; margin-bottom: 0.8rem;
+}
+.pw-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.6rem; font-weight: 400; font-style: italic;
+  color: var(--ink); line-height: 1; margin-bottom: 1.8rem;
+}
+.pw-body {
+  font-size: 13px; line-height: 1.9; color: #555; margin-bottom: 1.4rem;
+  font-family: 'DM Mono', monospace; font-weight: 300; letter-spacing: 0.03em;
+}
+.pw-body strong { color: var(--ink); font-weight: 400; }
+
+/* projects list */
+.proj-row {
+  display: grid; grid-template-columns: 1.8rem 1fr auto;
+  gap: 0 1.2rem; align-items: baseline;
+  padding: 1rem 0; border-bottom: 1px solid rgba(0,0,0,0.07);
+  cursor: pointer; transition: opacity 0.2s;
+}
+.proj-row:hover { opacity: 0.6; }
+.proj-n { font-size: 10px; letter-spacing: 0.15em; color: var(--muted); }
+.proj-name-blk {}
+.proj-name { font-size: 14px; color: var(--ink); margin-bottom: 3px; letter-spacing: 0.02em; }
+.proj-detail { font-size: 11px; color: var(--muted); line-height: 1.6; letter-spacing: 0.02em; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+.ptag { font-size: 10px; padding: 1px 6px; border: 1px solid rgba(0,0,0,0.12); color: var(--muted); border-radius: 2px; }
+.proj-yr { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; white-space: nowrap; }
+
+/* contact */
+.c-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.75rem 0; border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+.c-row a {
+  font-size: 12px; color: var(--muted); text-decoration: none;
+  letter-spacing: 0.08em; transition: color 0.15s;
+}
+.c-row a:hover { color: var(--ink); }
+.c-row-arrow { font-size: 10px; color: var(--muted); }
+
+.cf-input {
+  width: 100%; background: transparent; border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.15); outline: none;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--ink); padding: 0.6rem 0; margin-bottom: 0.3rem;
+  letter-spacing: 0.04em; transition: border-color 0.2s;
+}
+.cf-input::placeholder { color: rgba(0,0,0,0.25); font-style: italic; }
+.cf-input:focus { border-color: rgba(0,0,0,0.35); }
+.cf-submit {
+  margin-top: 1.2rem; background: var(--ink); color: #f0eeea;
+  border: none; padding: 0.55rem 1.4rem; font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.2em; cursor: pointer;
+  border-radius: 2px; transition: opacity 0.2s;
+}
+.cf-submit:hover { opacity: 0.75; }
+
+/* SPOTLIGHT */
+#spotlight-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(6px);
+  align-items: flex-start; justify-content: center;
+  padding-top: 18vh;
+}
+#spotlight-overlay.open { display: flex; }
+
+#spotlight-box {
+  width: min(580px, 88vw);
+  background: rgba(242,240,236,0.92);
+  backdrop-filter: blur(24px);
+  border-radius: 14px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.07);
+  overflow: hidden;
+  animation: windowIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+#spotlight-input-wrap {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0 1.2rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+#spotlight-input-wrap svg { flex-shrink: 0; opacity: 0.35; }
+#spotlight-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'DM Mono', monospace; font-size: 15px;
+  color: var(--ink); letter-spacing: 0.03em;
+  padding: 1.1rem 0; cursor: none;
+}
+#spotlight-input::placeholder { color: rgba(0,0,0,0.28); }
+
+#spotlight-results { max-height: 340px; overflow-y: auto; padding: 0.4rem 0; }
+
+.sp-result {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1.2rem; cursor: pointer; gap: 1rem;
+  transition: background 0.1s;
+}
+.sp-result:hover, .sp-result.active { background: rgba(37,99,235,0.1); }
+.sp-result-left { display: flex; flex-direction: column; gap: 2px; }
+.sp-result-name { font-size: 13px; color: var(--ink); letter-spacing: 0.02em; }
+.sp-result-desc { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+.sp-result-cat {
+  font-size: 9px; letter-spacing: 0.14em; color: var(--muted);
+  background: rgba(0,0,0,0.06); padding: 2px 7px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.sp-empty {
+  padding: 1.4rem 1.2rem;
+  font-size: 12px; color: var(--muted); letter-spacing: 0.06em;
+  font-style: italic;
+}
+.sp-hint {
+  padding: 0.5rem 1.2rem 0.7rem;
+  font-size: 9px; color: var(--muted); letter-spacing: 0.12em;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  display: flex; justify-content: space-between;
+}
+
+/* MOBILE */
+@media (pointer: coarse) {
+  #custom-cursor { display: none; }
+  *, *::before, *::after { cursor: auto !important; }
+}
+
+@media (max-width: 768px) {
+  /* hide desktop scatter — too chaotic on small screens */
+  .item, .folder-item { display: none; }
+
+  /* menubar — keep name + clock, hide middle items */
+  .menubar { gap: 0.8rem; padding: 0 0.8rem; }
+  .menubar-item { display: none; }
+  .menubar-name { font-size: 11px; }
+  .menubar-clock { font-size: 10px; }
+
+  /* hide cmd-k hint on mobile — no keyboard */
+  .menubar-right .menubar-item { display: none; }
+  .menubar-right { gap: 0.6rem; }
+
+  /* hero — tighter, scrolls with page */
+  .hero-wrap {
+    position: absolute;
+    top: 42%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+  }
+  .hero-name {
+    font-size: clamp(3.2rem, 17vw, 5.5rem);
+  }
+  .hero-sub {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    margin-top: 1.2rem;
+  }
+
+  /* dock — bigger tap targets */
+  .dock {
+    gap: 6px;
+    padding: 8px 10px 7px;
+    border-radius: 12px;
+  }
+  .dock-item img { width: 38px !important; height: 38px !important; }
+  .dock-label { font-size: 8px; }
+
+  /* panels — near full screen */
+  .panel-window { width: 95vw; max-height: 88vh; }
+  .panel-content { padding: 1.4rem 1.4rem; }
+  .pw-title { font-size: 2rem; }
+
+  /* spotlight */
+  #spotlight-box { width: 94vw; }
+  #spotlight-overlay { padding-top: 10vh; }
+
+  /* disable dragging hint on mobile */
+  .titlebar { cursor: default; }
+
+  /* show mobile nav hint */
+  .mobile-hint { display: block !important; }
+}
+
+/* DOCK */
+.dock {
+  position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+  z-index: 100;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: rgba(232,230,226,0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 14px; padding: 8px 14px 7px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+}
+.dock-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; transition: transform 0.15s ease;
+}
+.dock-item:hover { transform: translateY(-6px) scale(1.12); }
+.dock-folder { width: 44px; height: 36px; position: relative; }
+.dock-folder .folder-tab { width: 18px; height: 7px; }
+.dock-folder .folder-body { top: 5px; }
+.dock-folder .folder-shine { top: 2px; left: 5px; right: 5px; height: 9px; }
+.dock-label { font-size: 9px; letter-spacing: 0.1em; color: var(--muted); }
+.dock-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--muted);
+  margin-top: 1px; opacity: 0;
+}
+.dock-item.active .dock-dot { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="custom-cursor"></div>
+
+<div class="video-bg">
+  <video autoplay muted loop playsinline>
+    <source src="https://cdn.coverr.co/videos/coverr-white-lily-flowers-blooming-6826/1080p.mp4" type="video/mp4"/>
+  </video>
+</div>
+
+<!-- MENUBAR -->
+<div class="menubar">
+  <span class="menubar-name">paula's corner</span>
+  <span class="menubar-item" onclick="openPanel('about')">file</span>
+  <span class="menubar-item" onclick="openPanel('projects')">edit</span>
+  <span class="menubar-item">view</span>
+  <span class="menubar-item" onclick="openPanel('contact')">window</span>
+  <span class="menubar-item" onclick="openPanel('help')">help</span>
+  <div class="menubar-right">
+    <span class="menubar-item" onclick="openSpotlight()">cmd k for spotlight search</span>
+    <span class="menubar-clock" id="mbclock"></span>
+  </div>
+</div>
+
+<div class="desktop" style="padding-top:26px; min-height:100vh; position:relative;">
+
+  <!-- HERO -->
+  <div class="hero-wrap">
+    <div class="hero-name">
+      paula<br/>
+      <div class="selection-wrap">
+        <span>ramos perez.</span>
+        <div class="selection-box">
+          <div class="sel-handle-tl"></div>
+          <div class="sel-handle-tr"></div>
+          <div class="sel-handle-bl"></div>
+          <div class="sel-handle-br"></div>
+          <div class="sel-handle-t"></div>
+          <div class="sel-handle-b"></div>
+          <div class="sel-handle-l"></div>
+          <div class="sel-handle-r"></div>
+        </div>
+        <!-- cursor SVG -->
+      </div>
+    </div>
+    <div class="hero-sub">cs & political science @ purdue · tech@lilly</div>
+    <div class="hero-sub mobile-hint" style="margin-top:0.6rem;font-size:9px;opacity:0.6;display:none;">tap the dock below to explore</div>
+  </div>
+
+  <!-- SCATTERED IMAGES (placeholders — replace src with your own photos) -->
+
+  <!-- top center — traveling.jpg 3028×4573 (~2:3 portrait) -->
+  <div class="item" style="top: 5vh; left: 32%; --base-transform: rotate(-2deg); transform: rotate(-2deg);">
+    <div class="item-img-placeholder" style="width:128px;height:193px;background:linear-gradient(135deg,#c9d8c5,#a8bfa3);">
+      <img src="images/traveling.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"/>
+      <div class="img-caption">
+        <div class="img-caption-text">i love exploring new places and seeking new experiences.</div>
+        <div class="img-caption-sub">traveling</div>
+      </div>
+    </div>
+    <span class="item-label">traveling.jpg</span>
+  </div>
+
+  <!-- left — foodie.jpg 1536×2048 (3:4 portrait) -->
+  <div class="item" style="top: 28vh; left: 5vw; --base-transform: rotate(3deg); transform: rotate(3deg);">
+    <div class="item-img-placeholder" style="width:135px;height:180px;background:linear-gradient(135deg,#d4c9b0,#b8a88a);">
+      <img src="images/foodie.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"/>
+      <div class="img-caption">
+        <div class="img-caption-text">you can always catch me trying a new restaurant or cafe!</div>
+        <div class="img-caption-sub">foodie</div>
+      </div>
+    </div>
+    <span class="item-label">foodie.jpg</span>
+  </div>
+
+  <!-- right — music.jpg 3024×4032 (3:4 portrait) -->
+  <div class="item" style="top: 12vh; right: 9vw; --base-transform: rotate(-3deg); transform: rotate(-3deg);">
+    <div class="item-img-placeholder" style="width:135px;height:180px;background:linear-gradient(160deg,#d0dce8,#a8bfd4);">
+      <img src="images/music.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"/>
+      <div class="img-caption">
+        <div class="img-caption-text">i'm a big neo soul & salsa enthusiast! ask me about my favorite tracks.</div>
+        <div class="img-caption-sub">music</div>
+      </div>
+    </div>
+    <span class="item-label">music.jpg</span>
+  </div>
+
+  <!-- bottom right — usb.jpg 5127×3845 (~4:3 landscape) -->
+  <div class="item" style="bottom: 5vh; right: 2vw; --base-transform: rotate(4deg); transform: rotate(4deg);">
+    <div class="item-img-placeholder" style="width:180px;height:135px;background:linear-gradient(135deg,#c5d4bc,#8fad85);">
+      <img src="images/usb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"/>
+      <div class="img-caption">
+        <div class="img-caption-text">my home away from home at purdue.</div>
+        <div class="img-caption-sub">usb</div>
+      </div>
+    </div>
+    <span class="item-label">usb.jpg</span>
+  </div>
+
+  <!-- bottom center-left — exploring.JPG 1536×2048 (3:4 portrait) -->
+  <div class="item" style="bottom: 5vh; left: 18%; --base-transform: rotate(-2deg); transform: rotate(-2deg);">
+    <div class="item-img-placeholder" style="width:135px;height:180px;background:linear-gradient(145deg,#c8c0b8,#a89890);">
+      <img src="images/exploring.JPG" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"/>
+      <div class="img-caption">
+        <div class="img-caption-text">always finding a new corner.</div>
+        <div class="img-caption-sub">exploring</div>
+      </div>
+    </div>
+    <span class="item-label">exploring.jpg</span>
+  </div>
+
+  <!-- FOLDER: home — top right area -->
+  <div class="folder-item" style="position:absolute; top:42vh; right:10vw;" onclick="openPanel('about')">
+    <div class="folder-icon">
+      <img src="icons/mac_folder.png" alt="mac folder" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;"/>
+    </div>
+    <span class="item-label">about me</span>
+  </div>
+
+  <!-- FOLDER: projects — left side -->
+  <div class="folder-item" style="position:absolute; bottom:20vh; left:6vw;" onclick="openPanel('projects')">
+    <div class="folder-icon">
+      <img src="icons/mac_folder.png" alt="mac folder" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;"/>
+    </div>
+    <span class="item-label">projects</span>
+  </div>
+
+  <!-- FOLDER: contact — bottom right -->
+  <div class="folder-item" style="position:absolute; bottom:20vh; right:18vw;" onclick="openPanel('contact')">
+    <div class="folder-icon">
+      <img src="icons/mac_folder.png" alt="mac folder" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;"/>
+    </div>
+    <span class="item-label">contact</span>
+  </div>
+
+  <!-- FOLDER: resume — top left -->
+  <div class="folder-item" style="position:absolute; top:14vh; left:8vw;" onclick="openPanel('resume')">
+    <div class="folder-icon">
+      <img src="icons/mac_folder.png" alt="mac folder" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;"/>
+    </div>
+    <span class="item-label">résumé</span>
+  </div>
+
+</div>
+
+<!-- SPOTLIGHT -->
+<div id="spotlight-overlay">
+  <div id="spotlight-box">
+    <div id="spotlight-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="5" stroke="#111" stroke-width="1.5"/>
+        <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input id="spotlight-input" type="text" placeholder="search paula's corner..." autocomplete="off"/>
+    </div>
+    <div id="spotlight-results"></div>
+  </div>
+</div>
+
+<!-- DOCK -->
+<div class="dock">
+  <div class="dock-item" id="dock-about" onclick="openPanel('about')">
+    <img src="icons/mac_folder.png" alt="about me" style="width:44px;height:44px;object-fit:contain;"/>
+    <span class="dock-label">about me</span>
+    <div class="dock-dot"></div>
+  </div>
+  <div class="dock-item" id="dock-resume" onclick="openPanel('resume')">
+    <img src="icons/mac_folder.png" alt="résumé" style="width:44px;height:44px;object-fit:contain;"/>
+    <span class="dock-label">résumé</span>
+    <div class="dock-dot"></div>
+  </div>
+  <div class="dock-item" id="dock-projects" onclick="openPanel('projects')">
+    <img src="icons/mac_folder.png" alt="projects" style="width:44px;height:44px;object-fit:contain;"/>
+    <span class="dock-label">projects</span>
+    <div class="dock-dot"></div>
+  </div>
+  <div class="dock-item" id="dock-contact" onclick="openPanel('contact')">
+    <img src="icons/mac_folder.png" alt="contact" style="width:44px;height:44px;object-fit:contain;"/>
+    <span class="dock-label">contact</span>
+    <div class="dock-dot"></div>
+  </div>
+</div>
+
+<!-- PANEL WINDOWS -->
+<div class="panel-overlay" id="overlay-about">
+  <div class="panel-window">
+    <div class="titlebar">
+      <div class="tb-dot tb-close" onclick="closePanel('about')"></div>
+      <div class="tb-dot tb-min"></div>
+      <div class="tb-dot tb-max"></div>
+      <span class="tb-title">about me</span>
+    </div>
+    <div class="panel-content">
+      <div class="pw-eyebrow">01 — hello</div>
+      <div class="pw-title">hi there,<br/>i'm paula.</div>
+      <p class="pw-body">
+        i'm a senior at <strong> purdue</strong> studying <strong>computer science</strong> and  <strong>political science</strong> passionate about the intersection of technology and law.
+      </p>
+      <p class="pw-body">
+       with a strong technical foundation and a background in political science, i bring a unique perspective, always considering the broader implications of the technology around me.
+      </p>
+      <p class="pw-body">
+       i am currently a <strong>software engineering intern</strong> at <strong>eli lilly</strong>, working on meaningful, high-impact projects and learning from amazing mentors.
+      </p>
+      <p class="pw-body">
+        in the <strong>future</strong>: aspiring to be a technology lawyer working on ai governance, privacy, and intellectual property issues.
+      </p>
+      <div style="display:flex;gap:2.5rem;margin-top:1.5rem;padding-top:1.4rem;border-top:1px solid rgba(0,0,0,0.07);">
+        <div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:2rem;color:var(--ink);line-height:1;">1+ years</div>
+          <div style="font-size:10px;letter-spacing:0.18em;color:var(--muted);margin-top:3px;">industry experience</div>
+        </div>
+        <div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:2rem;color:var(--ink);line-height:1;">3 years</div>
+          <div style="font-size:10px;letter-spacing:0.18em;color:var(--muted);margin-top:3px;">campus involvement</div>
+        </div>
+        <div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:2rem;color:var(--ink);line-height:1;">IoR</div>
+          <div style="font-size:10px;letter-spacing:0.18em;color:var(--muted);margin-top:3px;">instructor of record for cs19300</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay-projects">
+  <div class="panel-window">
+    <div class="titlebar">
+      <div class="tb-dot tb-close" onclick="closePanel('projects')"></div>
+      <div class="tb-dot tb-min"></div>
+      <div class="tb-dot tb-max"></div>
+      <span class="tb-title">projects</span>
+    </div>
+    <div class="panel-content">
+      <div class="pw-eyebrow">02 — selected work</div>
+      <div class="pw-title">work in<br/>progress.</div>
+      <p class="pw-body" style="margin-top:0.5rem;">
+        this section is still being put together. in the meantime, feel free to reach out directly — i'm happy to walk you through what i've been working on.
+      </p>
+      <div style="margin-top:2rem;padding-top:1.4rem;border-top:1px solid rgba(0,0,0,0.07);">
+        <a href="mailto:ramosperez.pau@gmail.com" style="display:inline-flex;align-items:center;gap:0.6rem;font-size:11px;letter-spacing:0.2em;color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">→ contact me directly</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay-contact">
+  <div class="panel-window">
+    <div class="titlebar">
+      <div class="tb-dot tb-close" onclick="closePanel('contact')"></div>
+      <div class="tb-dot tb-min"></div>
+      <div class="tb-dot tb-max"></div>
+      <span class="tb-title">contact</span>
+    </div>
+    <div class="panel-content">
+      <div class="pw-eyebrow">03 — get in touch</div>
+      <div class="pw-title">let's stay<br/>connected.</div>
+      <p class="pw-body" style="margin-bottom:1.4rem;">always seeking new opportunities. best reached by email or linkedin.</p>
+
+      <div class="c-row"><a href="mailto:ramosperez.pau@gmail.com">email</a><span class="c-row-arrow">→</span></div>
+      <div class="c-row"><a href="https://github.com/pramope">github</a><span class="c-row-arrow">→</span></div>
+      <div class="c-row"><a href="https://linkedin.com/in/pramope">linkedin</a><span class="c-row-arrow">→</span></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay-resume">
+  <div class="panel-window">
+    <div class="titlebar">
+      <div class="tb-dot tb-close" onclick="closePanel('resume')"></div>
+      <div class="tb-dot tb-min"></div>
+      <div class="tb-dot tb-max"></div>
+      <span class="tb-title">résumé</span>
+    </div>
+    <div class="panel-content">
+      <div class="pw-eyebrow">04 — experience</div>
+      <div class="pw-title">where i've been.</div>
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">tech@lilly intern</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">eli lilly — software platform engineering, qa</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">may 2026 – now</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">tech@lilly intern</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">eli lilly — global medical affairs</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">may – aug 2025</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">student lecturer & instructor of record</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">purdue university — cs19300: tools</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">aug 2024 – dec 2025</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">vice president</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">cs undergraduate student board, purdue</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">apr 2026 – now</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">b.s. computer science</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">purdue university — concentration: security</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">2023 – 2027</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;">
+          <div>
+            <div style="font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:0.02em;">b.a. political science</div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;">purdue university — concentration: international relations</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;">2024 – 2027</div>
+        </div>
+      </div>
+
+      <a href="Ramos_Perez_Paula_Resume-2026.pdf" download style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1.5rem;font-size:11px;letter-spacing:0.2em;color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">↓ download pdf</a>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay-help">
+  <div class="panel-window">
+    <div class="titlebar">
+      <div class="tb-dot tb-close" onclick="closePanel('help')"></div>
+      <div class="tb-dot tb-min"></div>
+      <div class="tb-dot tb-max"></div>
+      <span class="tb-title">help</span>
+    </div>
+    <div class="panel-content">
+      <div class="pw-eyebrow">— how to navigate</div>
+      <div class="pw-title">find your<br/>way around.</div>
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <span style="font-size:12px;color:var(--ink);letter-spacing:0.02em;">open spotlight search</span>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:0.1em;background:rgba(0,0,0,0.06);padding:3px 10px;border-radius:4px;">⌘ K</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <span style="font-size:12px;color:var(--ink);letter-spacing:0.02em;">open a folder</span>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:0.1em;">click any folder or dock icon</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <span style="font-size:12px;color:var(--ink);letter-spacing:0.02em;">close a window</span>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:0.1em;">click the red dot or outside</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+          <span style="font-size:12px;color:var(--ink);letter-spacing:0.02em;">move a window</span>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:0.1em;">drag the titlebar</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;">
+          <span style="font-size:12px;color:var(--ink);letter-spacing:0.02em;">hover over photos</span>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:0.1em;">see captions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openPanel(id) {
+    document.querySelectorAll('.panel-overlay').forEach(o => o.classList.remove('open'));
+    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+    const overlay = document.getElementById('overlay-' + id);
+    const win = overlay.querySelector('.panel-window');
+    // reset to centered position each time
+    overlay.style.alignItems = '';
+    overlay.style.justifyContent = '';
+    win.style.position = '';
+    win.style.left = '';
+    win.style.top = '';
+    win.style.margin = '';
+    overlay.classList.add('open');
+    const dockEl = document.getElementById('dock-' + id);
+    if (dockEl) dockEl.classList.add('active');
+  }
+
+  function closePanel(id) {
+    document.getElementById('overlay-' + id).classList.remove('open');
+    const dockEl = document.getElementById('dock-' + id);
+    if (dockEl) dockEl.classList.remove('active');
+  }
+
+  document.querySelectorAll('.panel-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        const id = this.id.replace('overlay-', '');
+        closePanel(id);
+      }
+    });
+  });
+
+  // draggable windows
+  document.querySelectorAll('.panel-overlay').forEach(overlay => {
+    const win = overlay.querySelector('.panel-window');
+    const titlebar = overlay.querySelector('.titlebar');
+    let dragging = false, ox, oy;
+
+    titlebar.addEventListener('mousedown', e => {
+      if (e.target.classList.contains('tb-dot')) return;
+      const rect = win.getBoundingClientRect();
+      overlay.style.alignItems = 'flex-start';
+      overlay.style.justifyContent = 'flex-start';
+      win.style.position = 'absolute';
+      win.style.left = rect.left + 'px';
+      win.style.top = rect.top + 'px';
+      win.style.margin = '0';
+      ox = e.clientX - rect.left;
+      oy = e.clientY - rect.top;
+      dragging = true;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      win.style.left = (e.clientX - ox) + 'px';
+      win.style.top  = (e.clientY - oy) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => { dragging = false; });
+  });
+
+  const cursor = document.getElementById('custom-cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+
+  const interactiveSelectors = 'a, button, input, textarea, .item, .folder-item, .dock-item, .tb-dot, .titlebar, .menubar-item, .proj-row, .c-row, .sp-result, .cf-submit';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(interactiveSelectors)) cursor.classList.add('pointer');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(interactiveSelectors)) cursor.classList.remove('pointer');
+  });
+
+  function tick() {
+    const now = new Date();
+    document.getElementById('mbclock').textContent =
+      now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}) + '  ' +
+      now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  }
+  tick(); setInterval(tick, 1000);
+
+  // SPOTLIGHT
+  const spItems = [
+    { name: 'about me',            desc: 'who i am & what i do',                      cat: 'section',    action: () => openPanel('about') },
+    { name: 'résumé',              desc: 'experience & education',                     cat: 'section',    action: () => openPanel('resume') },
+    { name: 'projects',            desc: 'things i\'ve built',                         cat: 'section',    action: () => openPanel('projects') },
+    { name: 'contact',             desc: 'get in touch',                               cat: 'section',    action: () => openPanel('contact') },
+    { name: 'eli lilly',           desc: 'tech@lilly intern — software platform eng',  cat: 'experience', action: () => openPanel('resume') },
+    { name: 'student lecturer',    desc: 'instructor of record — cs19300 @ purdue',    cat: 'experience', action: () => openPanel('resume') },
+    { name: 'cs undergrad board',  desc: 'vice president @ purdue',                    cat: 'experience', action: () => openPanel('resume') },
+    { name: 'computer science',    desc: 'b.s. cs, concentration: security',           cat: 'education',  action: () => openPanel('resume') },
+    { name: 'political science',   desc: 'b.a. poli sci, concentration: intl relations', cat: 'education', action: () => openPanel('resume') },
+    { name: 'email',               desc: 'ramos107@purdue.edu',                        cat: 'contact',    action: () => openPanel('contact') },
+    { name: 'linkedin',            desc: 'linkedin.com/in/pramosp',                    cat: 'contact',    action: () => openPanel('contact') },
+    { name: 'purdue university',   desc: 'west lafayette, in — class of 2027',         cat: 'education',  action: () => openPanel('resume') },
+  ];
+
+  const spOverlay = document.getElementById('spotlight-overlay');
+  const spInput   = document.getElementById('spotlight-input');
+  const spResults = document.getElementById('spotlight-results');
+  let spActive = -1;
+
+  function openSpotlight() {
+    spOverlay.classList.add('open');
+    spInput.value = '';
+    spActive = -1;
+    renderSpotlight('');
+    setTimeout(() => spInput.focus(), 50);
+  }
+  function closeSpotlight() {
+    spOverlay.classList.remove('open');
+    spInput.blur();
+  }
+
+  function renderSpotlight(q) {
+    const filtered = q.trim() === ''
+      ? spItems
+      : spItems.filter(i => i.name.includes(q.toLowerCase()) || i.desc.includes(q.toLowerCase()) || i.cat.includes(q.toLowerCase()));
+    spActive = -1;
+    if (!filtered.length) {
+      spResults.innerHTML = '<div class="sp-empty">no results for "' + q + '"</div>';
+      return;
+    }
+    spResults.innerHTML = filtered.map((item, i) => `
+      <div class="sp-result" data-idx="${i}" onmousedown="spSelect(${spItems.indexOf(item)})">
+        <div class="sp-result-left">
+          <div class="sp-result-name">${item.name}</div>
+          <div class="sp-result-desc">${item.desc}</div>
+        </div>
+        <span class="sp-result-cat">${item.cat}</span>
+      </div>`).join('') +
+      '<div class="sp-hint"><span>↑↓ navigate</span><span>↵ open</span><span>esc close</span></div>';
+  }
+
+  window.spSelect = function(idx) {
+    closeSpotlight();
+    spItems[idx].action();
+  };
+
+  spInput.addEventListener('input', () => renderSpotlight(spInput.value));
+
+  spInput.addEventListener('keydown', e => {
+    const rows = spResults.querySelectorAll('.sp-result');
+    if (e.key === 'ArrowDown') {
+      spActive = Math.min(spActive + 1, rows.length - 1);
+    } else if (e.key === 'ArrowUp') {
+      spActive = Math.max(spActive - 1, 0);
+    } else if (e.key === 'Enter' && spActive >= 0) {
+      rows[spActive].dispatchEvent(new MouseEvent('mousedown'));
+      return;
+    } else if (e.key === 'Escape') {
+      closeSpotlight(); return;
+    }
+    rows.forEach((r, i) => r.classList.toggle('active', i === spActive));
+    if (rows[spActive]) rows[spActive].scrollIntoView({ block: 'nearest' });
+  });
+
+  spOverlay.addEventListener('mousedown', e => { if (e.target === spOverlay) closeSpotlight(); });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSpotlight(); }
+    if (e.key === 'Escape' && spOverlay.classList.contains('open')) closeSpotlight();
+  });
+</script>
+</body>
+</html>

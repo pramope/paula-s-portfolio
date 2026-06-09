@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/paularamos/Downloads/portfolio/images/foodie.jpg /Users/paularamos/Downloads/portfolio/images/traveling.jpg /Users/paularamos/Downloads/portfolio/images/usb.jpg /Users/paularamos/Downloads/portfolio/images/music.jpg /Users/paularamos/Downloads/portfolio/images/exploring.JPG)"
+    ]
+  }
+}
